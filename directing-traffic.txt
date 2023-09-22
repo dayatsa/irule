@@ -1,0 +1,19 @@
+when CLIENT_ACCEPTED {
+    if { [IP::addr [IP::client_addr] equals 10.5.170.101] } {
+        log local0. "Current client ip: [IP::client_addr]"
+        pool DAYAT_POOL
+    }
+}
+
+when HTTP_REQUEST {
+    if { [HTTP::uri] equals "/" } {
+        log local0. "LB  [LB::status node 10.43.2.123%27] ss"
+        if { [LB::status pool DAYAT_POOL member 10.43.2.123%27 40454] eq "down" } {
+            log local0. "[HTTP::uri] Server [LB::status]"
+            pool KBI_DEV2b
+        } else {
+            log "[HTTP::uri] Masuk tes DAYAT_POOL!"
+            pool DAYAT_POOL member 10.43.2.123%27 40454
+        }
+    }
+}
